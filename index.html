@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Andrea Cescato</title>
+<meta name="description" content="Andrea Cescato: aerospace engineer working on flight control, flight dynamics and simulation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,600;112,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: personal landing; portrait + name on the left, sections as horizon-ruled rows on the right */
+:root {
+  --bg: #f3f6f9;
+  --surface: #ffffff;
+  --ink: #13233a;
+  --muted: #56677d;
+  --line: #d6dee8;
+  --accent: #1d4f99;
+  --signal: #d9821c;
+  --tint: #e7eef6;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1420; --surface: #121d2c; --ink: #e5ecf4; --muted: #95a5ba; --line: #24344a;
+    --accent: #8db7ff; --signal: #f0a548; --tint: #172639;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1420; --surface: #121d2c; --ink: #e5ecf4; --muted: #95a5ba; --line: #24344a;
+  --accent: #8db7ff; --signal: #f0a548; --tint: #172639;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 1rem/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: clamp(40px, 9vh, 96px) 32px; display: grid; grid-template-columns: 340px 1fr; gap: clamp(32px, 6vw, 80px); align-items: start; }
+.wrap > * { min-width: 0; }
+
+.me { display: flex; flex-direction: column; gap: 18px; }
+.portrait { width: 200px; max-width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; overflow: hidden; background: var(--tint); box-shadow: 0 0 0 1px var(--line), 0 0 0 8px var(--bg), 0 0 0 9px var(--line); }
+.portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
+h1 { font: 700 clamp(2.4rem, 5vw, 3.3rem)/1.02 var(--display); font-stretch: 112%; margin: 10px 0 0; text-wrap: balance; letter-spacing: -.01em; }
+.me p { margin: 0; }
+.role { color: var(--accent); font-weight: 500; font-size: 1.08rem; line-height: 1.4; }
+.bio { color: var(--muted); max-width: 40ch; }
+.where { font: .82rem/1.5 var(--mono); color: var(--muted); }
+
+.links { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; font-size: .95rem; }
+.links div { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.links span.k { font: 500 .7rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); width: 72px; flex: none; }
+.links .v { overflow-wrap: anywhere; }
+.copy { font: 500 .7rem/1 var(--mono); padding: 4px 7px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
+.copy:hover { color: var(--ink); border-color: var(--accent); }
+
+.eyebrow { font: 500 .75rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.rows { display: flex; flex-direction: column; margin-top: 18px; border-top: 1px solid var(--line); }
+.row { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 8px 24px; align-items: center; padding: 26px 4px 26px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); }
+.row > * { min-width: 0; }
+.row h2 { font: 700 clamp(1.5rem, 3vw, 2rem)/1.1 var(--display); font-stretch: 112%; margin: 0; }
+.row p { color: var(--muted); margin: 8px 0 0; max-width: 52ch; }
+.row .path { font: .8rem/1.4 var(--mono); color: var(--muted); margin-top: 10px; }
+.row .go { font: 500 .85rem/1 var(--mono); color: var(--accent); white-space: nowrap; transition: transform .2s ease; }
+a.row::before { content: ""; position: absolute; left: -16px; top: 26px; bottom: 26px; width: 3px; border-radius: 2px; background: var(--signal); transform: scaleY(0); transform-origin: center; transition: transform .2s ease; }
+a.row:hover::before, a.row:focus-visible::before { transform: scaleY(1); }
+a.row:hover .go { transform: translateX(4px); }
+.row.soon { color: var(--muted); }
+.row.soon h2 { color: var(--muted); }
+.row.soon .go { color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tag { font: 500 .72rem/1 var(--mono); padding: 6px 8px; border-radius: 4px; background: var(--tint); color: var(--accent); }
+
+footer { max-width: 1040px; margin: 0 auto; padding-block: 24px 36px; font: .78rem/1.5 var(--mono); color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); }
+
+@media (prefers-reduced-motion: reduce) { .row .go, a.row::before { transition: none; } }
+@media (max-width: 820px) {
+  .wrap { grid-template-columns: 1fr; gap: 40px; padding-block: 36px 24px; }
+  .portrait { width: 160px; }
+  a.row::before { left: -10px; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="me" aria-label="About">
+    <div class="portrait"><img src="img/andrea.png" alt="Portrait of Andrea Cescato" width="400" height="400"></div>
+    <div>
+      <h1>Andrea Cescato</h1>
+    </div>
+    <p class="role">Aerospace engineer · flight control, flight dynamics and simulation</p>
+    <p class="bio">I design control laws and build flight simulation models, and I work on safety-critical aerospace systems on Leonardo programmes. Outside work I operate the Polse di Cougnes astronomical observatory and take photographs.</p>
+    <p class="where">Milan area, Italy</p>
+    <div class="links">
+      <div><span class="k">Email</span><span class="v" id="mail">andrea@cescato.it</span><button class="copy" id="copy" type="button">Copy</button></div>
+      <div><span class="k">LinkedIn</span><a class="v" href="https://www.linkedin.com/in/andreacescato" target="_blank" rel="noopener">linkedin.com/in/andreacescato</a></div>
+      <div><span class="k">GitHub</span><a class="v" href="https://github.com/andreacescato" target="_blank" rel="noopener">github.com/andreacescato</a></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="sections-h">
+    <div class="eyebrow" id="sections-h">On this site</div>
+    <nav class="rows">
+      <a class="row" href="engineering/index.html">
+        <div>
+          <h2>Engineering</h2>
+          <p>Flight control and flight dynamics projects with figures, professional experience and my CV.</p>
+          <div class="tags"><span class="tag">Control laws</span><span class="tag">6-DOF simulation</span><span class="tag">Simulink</span><span class="tag">Monte Carlo</span></div>
+          <div class="path">andrea.cescato.it/engineering</div>
+        </div>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <div class="row soon" aria-disabled="true">
+        <div>
+          <h2>Photography</h2>
+          <p>A selection of my photographs.</p>
+          <div class="path">andrea.cescato.it/photography</div>
+        </div>
+        <span class="go">Coming soon</span>
+      </div>
+    </nav>
+  </section>
+</main>
+<footer><span>© 2026 Andrea Cescato</span><span>andrea.cescato.it</span></footer>
+
+<script>
+(() => {
+  const btn = document.getElementById('copy'), mail = document.getElementById('mail');
+  btn.addEventListener('click', () => {
+    const reset = () => setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(mail); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selected'; reset(); };
+    try { navigator.clipboard.writeText(mail.textContent).then(() => { btn.textContent = 'Copied'; reset(); }, fallback); } catch (e) { fallback(); }
+  });
+})();
+</script>
+</body>
+</html>
