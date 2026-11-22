@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Andrea Cescato · Ingegneria</title>
+<link rel="alternate" hreflang="en" href="https://andrea.cescato.it/engineering/">
+<link rel="alternate" hreflang="fr" href="https://andrea.cescato.it/fr/engineering/">
+<link rel="alternate" hreflang="it" href="https://andrea.cescato.it/it/engineering/">
+<link rel="alternate" hreflang="x-default" href="https://andrea.cescato.it/engineering/">
+<meta name="description" content="Andrea Cescato, ingegnere aerospaziale: leggi di controllo del volo, dinamica del volo e simulazione.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,600;112,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single column engineering notebook; hero = live attitude indicator; projects as figure-led case studies */
+:root {
+  --bg: #f3f6f9;
+  --surface: #ffffff;
+  --ink: #13233a;
+  --muted: #56677d;
+  --line: #d6dee8;
+  --accent: #1d4f99;
+  --signal: #d9821c;
+  --tint: #e7eef6;
+  --sky: #3f7fc4;
+  --ground: #8a5a33;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --maxw: 1080px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1420; --surface: #121d2c; --ink: #e5ecf4; --muted: #95a5ba; --line: #24344a;
+    --accent: #8db7ff; --signal: #f0a548; --tint: #172639; --sky: #2f6aa8; --ground: #6f4727;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1420; --surface: #121d2c; --ink: #e5ecf4; --muted: #95a5ba; --line: #24344a;
+  --accent: #8db7ff; --signal: #f0a548; --tint: #172639; --sky: #2f6aa8; --ground: #6f4727;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 1rem/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: var(--maxw); margin: 0 auto; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 3px; }
+h1, h2, h3 { font-family: var(--display); font-stretch: 112%; text-wrap: balance; margin: 0; line-height: 1.1; }
+h2 { font-size: clamp(1.6rem, 3.2vw, 2.2rem); }
+h3 { font-size: 1.25rem; }
+p { margin: 0; }
+.eyebrow { font: 500 .75rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--mono); }
+
+/* top bar */
+.top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 22px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.brand { font: 700 1rem/1 var(--display); font-stretch: 112%; color: var(--ink); text-decoration: none; letter-spacing: .02em; }
+.top nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.top nav a { color: var(--muted); text-decoration: none; font-size: .92rem; }
+.top nav a:hover { color: var(--ink); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; padding-block: 56px 48px; }
+.hero > * { min-width: 0; }
+.hero h1 { font-size: clamp(2.6rem, 6.4vw, 4.4rem); letter-spacing: -.01em; }
+.hero .role { font: 500 clamp(1.05rem, 2vw, 1.3rem)/1.35 var(--body); color: var(--accent); margin-top: 14px; }
+.hero .lede { color: var(--muted); max-width: 58ch; margin-top: 18px; font-size: 1.05rem; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 6px; font: 500 .95rem/1 var(--body); text-decoration: none; border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn:hover { border-color: var(--accent); }
+.facts { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 30px; font: .85rem/1.4 var(--mono); color: var(--muted); }
+.facts b { color: var(--ink); font-weight: 500; }
+
+/* attitude indicator */
+.adi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+.adi canvas { display: block; width: 100%; max-width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; cursor: ns-resize; touch-action: none; }
+.adi .readout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.adi .readout div { background: var(--tint); border-radius: 5px; padding: 8px 10px; }
+.adi .readout span { display: block; font-size: .7rem; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.adi .readout b { font-size: 1.05rem; font-weight: 500; }
+.adi .readout .cmd b { color: var(--signal); }
+.adi .note { font-size: .78rem; color: var(--muted); margin-top: 10px; line-height: 1.45; }
+
+/* design cycle */
+.cycle { border-block: 1px solid var(--line); padding-block: 26px; }
+.cycle ol { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; counter-reset: s; }
+.cycle li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 12px 14px; font-size: .9rem; line-height: 1.35; }
+.cycle li::before { content: counter(s); display: block; font: 500 .72rem/1 var(--mono); color: var(--signal); margin-bottom: 8px; }
+.cycle li b { display: block; font-family: var(--display); font-stretch: 112%; font-size: 1rem; margin-bottom: 4px; }
+.cycle li span { color: var(--muted); }
+
+/* sections */
+section.block { padding-block: 64px 8px; }
+.sechead { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+.sechead p { color: var(--muted); max-width: 52ch; }
+
+/* case study */
+.case { display: grid; grid-template-columns: 360px 1fr; gap: 36px; padding-block: 34px; border-top: 1px solid var(--line); }
+.case > * { min-width: 0; }
+.case .meta { font: .8rem/1.5 var(--mono); color: var(--muted); margin: 8px 0 14px; }
+.case .text p + p, .case .text ul { margin-top: 12px; }
+.case ul { padding-left: 18px; margin: 0; }
+.case li { margin-bottom: 6px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.tag { font: 500 .72rem/1 var(--mono); padding: 6px 8px; border-radius: 4px; background: var(--tint); color: var(--accent); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 18px; }
+.kpi { border-left: 3px solid var(--signal); padding: 4px 0 4px 12px; }
+.kpi b { display: block; font: 700 1.6rem/1.1 var(--display); font-stretch: 112%; font-variant-numeric: tabular-nums; }
+.kpi span { font-size: .8rem; color: var(--muted); line-height: 1.35; display: block; margin-top: 4px; }
+.figs { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); align-content: start; }
+.figs.three { grid-template-columns: repeat(3, 1fr); }
+figure { margin: 0; display: flex; flex-direction: column; min-width: 0; }
+figure .im { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 6px; display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3; overflow: hidden; }
+figure .im.photo { padding: 0; }
+figure img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+figure .im.photo img { width: 100%; height: 100%; object-fit: cover; }
+figcaption { font-size: .8rem; color: var(--muted); margin-top: 7px; line-height: 1.4; }
+figcaption b { color: var(--ink); font-weight: 600; }
+.wide { grid-column: 1 / -1; }
+.wide .im { aspect-ratio: 16 / 7; }
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-content: start; }
+.flow div { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 6px; padding: 12px; font-size: .86rem; line-height: 1.4; color: var(--muted); }
+.flow div b { display: block; color: var(--ink); font-family: var(--display); font-stretch: 112%; font-size: .95rem; margin-bottom: 4px; }
+.privacy { font-size: .8rem; color: var(--muted); margin-top: 14px; font-style: italic; }
+
+/* small projects */
+.minis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; border-top: 1px solid var(--line); padding-top: 34px; margin-top: 8px; }
+.mini { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.mini .meta { font: .78rem/1.4 var(--mono); color: var(--muted); }
+.mini p { font-size: .93rem; }
+.mini .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mini .photos img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 5px; display: block; }
+.mini .tags { margin-top: auto; padding-top: 6px; }
+
+/* experience */
+.timeline { display: grid; gap: 0; }
+.job { display: grid; grid-template-columns: 200px 1fr; gap: 28px; padding-block: 20px; border-top: 1px solid var(--line); }
+.job > * { min-width: 0; }
+.job .when { font: .82rem/1.5 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.job h3 { font-size: 1.1rem; }
+.job .org { color: var(--accent); font-size: .92rem; margin-top: 3px; }
+.job p.d { color: var(--muted); margin-top: 8px; max-width: 70ch; font-size: .95rem; }
+
+.skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 8px; }
+.skills div { min-width: 0; }
+.skills h3 { font-size: 1rem; margin-bottom: 8px; }
+.skills p { color: var(--muted); font-size: .93rem; }
+
+/* contact */
+.contact { margin-top: 72px; background: var(--ink); color: var(--bg); border-radius: 12px; padding: 40px clamp(20px, 4vw, 48px); display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; }
+.contact > * { min-width: 0; }
+.contact h2 { color: var(--bg); }
+.contact p { opacity: .8; margin-top: 12px; max-width: 46ch; }
+.contact dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; align-content: center; font-size: .95rem; }
+.contact dt { font: .75rem/1.9 var(--mono); text-transform: uppercase; letter-spacing: .1em; opacity: .65; }
+.contact dd { margin: 0; overflow-wrap: anywhere; }
+.contact a { color: var(--bg); }
+.copy { margin-left: 8px; font: 500 .72rem/1 var(--mono); padding: 5px 8px; border-radius: 4px; border: 1px solid currentColor; background: transparent; color: var(--bg); cursor: pointer; opacity: .8; }
+.copy:hover { opacity: 1; }
+footer { padding-block: 28px 40px; font: .78rem/1.5 var(--mono); color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; gap: 32px; padding-block: 40px 36px; }
+  .adi { max-width: 420px; }
+  .cycle ol { grid-template-columns: repeat(3, 1fr); }
+  .case { grid-template-columns: 1fr; gap: 22px; }
+  .flow { grid-template-columns: 1fr 1fr; }
+  .minis, .skills { grid-template-columns: 1fr; }
+  .job { grid-template-columns: 1fr; gap: 6px; }
+  .contact { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .cycle ol { grid-template-columns: 1fr 1fr; }
+  .figs, .figs.three { grid-template-columns: 1fr; }
+  .flow { grid-template-columns: 1fr; }
+  .top nav { gap: 14px; }
+}
+
+.langs { display: flex; gap: 10px; align-items: center; font: 500 .78rem/1 var(--mono); letter-spacing: .06em; }
+.langs a { color: var(--muted); text-decoration: none; padding: 4px 2px; }
+.langs a:hover { color: var(--ink); }
+.langs a[aria-current="page"] { color: var(--ink); border-bottom: 2px solid var(--signal); }
+.top .langs { padding-left: 16px; border-left: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="../index.html" title="andrea.cescato.it">ANDREA CESCATO</a>
+    <nav aria-label="Sections">
+      <a href="#projects">Progetti</a>
+      <a href="#experience">Esperienza</a>
+      <a href="#contact">Contatti</a>
+      <span class="langs" aria-label="Language"><a href="../../engineering/index.html" hreflang="en" lang="en">EN</a><a href="../../fr/engineering/index.html" hreflang="fr" lang="fr">FR</a><a href="index.html" hreflang="it" lang="it" aria-current="page">IT</a></span>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Ingegnere aerospaziale · Area di Milano</div>
+        <h1 style="margin-top:14px;">Andrea Cescato</h1>
+        <p class="role">Leggi di controllo del volo, dinamica del volo e simulazione</p>
+        <p class="lede">Progetto e valido leggi di controllo su modelli di volo non lineari in MATLAB/Simulink, dal trim e dalla linearizzazione fino alla simulazione in anello chiuso. In azienda lavoro su sistemi aerospaziali safety-critical per programmi Leonardo: oggi modelli di simulazione in anello chiuso, prima avionica model-based secondo DO-178C sull'elicottero AW249.</p>
+        <div class="actions">
+          <a class="btn primary" href="#projects">Vedi i progetti</a>
+          <a class="btn" href="../../engineering/cv/Andrea_Cescato_CV.pdf" target="_blank" rel="noopener">CV (PDF, in inglese)</a>
+          <a class="btn" href="https://www.linkedin.com/in/andreacescato" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+        <div class="facts">
+          <span><b>Laurea magistrale</b> Ing. aerospaziale, Bologna</span>
+          <span><b>~3 anni</b> nel settore aerospaziale</span>
+          <span><b>EN</b> C1 · <b>FR</b> B1 · <b>IT</b> madrelingua</span>
+        </div>
+      </div>
+
+      <div class="adi" aria-label="Orizzonte artificiale interattivo">
+        <canvas id="adi" width="600" height="600" role="img" aria-label="Orizzonte artificiale: l'orizzonte segue l'assetto di beccheggio comandato"></canvas>
+        <div class="readout">
+          <div class="cmd"><span>θ cmd</span><b id="rc">+0.0°</b></div>
+          <div><span>θ</span><b id="rt">+0.0°</b></div>
+          <div><span>q</span><b id="rq">+0.0°/s</b></div>
+        </div>
+        <p class="note">Trascina sullo strumento verso l'alto o verso il basso per comandare l'assetto di beccheggio. Quando è inattivo ripete la sequenza di gradini di ±15° del test del mio autopilota del Cessna 172. La risposta mostrata è un modello illustrativo del secondo ordine (ω<sub>n</sub> = 1,6 rad/s, ζ = 0,7), non i dati del progetto.</p>
+      </div>
+    </section>
+
+    <section class="cycle" aria-labelledby="cycle-h">
+      <div class="eyebrow" id="cycle-h">Come lavoro su una legge di controllo</div>
+      <ol>
+        <li><b>Trim</b><span>volo stazionario sul modello non lineare a 6 gradi di libertà</span></li>
+        <li><b>Linearizzazione</b><span>matrici A/B per piccole perturbazioni</span></li>
+        <li><b>Analisi</b><span>modi propri, requisiti di qualità di volo</span></li>
+        <li><b>Progetto</b><span>luogo delle radici, PID, LQR, taratura</span></li>
+        <li><b>Implementazione</b><span>Simulink, saturazioni e anti-windup</span></li>
+        <li><b>Validazione</b><span>simulazione in anello chiuso, Monte Carlo</span></li>
+      </ol>
+    </section>
+
+    <section class="block" id="projects" aria-labelledby="proj-h">
+      <div class="sechead">
+        <h2 id="proj-h">Progetti</h2>
+        <p>Le figure provengono dai miei report di progetto. Il lavoro in azienda è riservato e lo descrivo solo a parole.</p>
+      </div>
+
+      <article class="case">
+        <div class="text">
+          <div class="eyebrow">Controllo del volo ad ala fissa</div>
+          <h3 style="margin-top:8px;">Cessna 172: pitch damper e autopilota di assetto</h3>
+          <div class="meta">Università di Bologna · 2021 · team di 2</div>
+          <p>Un ciclo di progetto completo su un modello non lineare a 6 gradi di libertà del Cessna 172, trimmato in salita stazionaria a 5000 m.</p>
+          <ul>
+            <li>Modelli longitudinale e latero-direzionale linearizzati numericamente e verificati con le derivate di stabilità analitiche; modi confrontati con le loro approssimazioni letterali.</li>
+            <li>Pitch damper dimensionato sui criteri di qualità di volo di Livello 1: smorzamento del corto periodo portato da 0,217 a 0,3.</li>
+            <li>Autopilota di assetto progettato con compensazione sul luogo delle radici, implementato come PID con saturazione dell'equilibratore a ±25° e anti-windup back-calculation.</li>
+            <li>Anello chiuso eseguito in tempo reale, con il modello Simulink che alimenta FlightGear.</li>
+          </ul>
+          <div class="kpis">
+            <div class="kpi"><b>0,217 → 0,3</b><span>smorzamento del corto periodo con K<sub>q</sub> = −0,04</span></div>
+            <div class="kpi"><b>±15°</b><span>comandi di assetto inseguiti in FlightGear</span></div>
+          </div>
+          <div class="tags"><span class="tag">6-DOF</span><span class="tag">Linearizzazione</span><span class="tag">Qualità di volo</span><span class="tag">PID</span><span class="tag">Anti-windup</span><span class="tag">FlightGear</span></div>
+        </div>
+        <div class="figs">
+          <figure><div class="im"><img src="../../engineering/img/pitch-damper-rlocus.png" alt="Root locus of the pitch-rate loop" loading="lazy"></div><figcaption><b>Pitch damper.</b> Luogo delle radici dell'anello di retroazione su q.</figcaption></figure>
+          <figure><div class="im photo"><img src="../../engineering/img/flightgear.jpg" alt="Cessna 172 in FlightGear" loading="lazy"></div><figcaption><b>FlightGear</b> alimentato dall'anello chiuso in Simulink.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/step-saturation.png" alt="Step response with elevator saturation showing overshoot" loading="lazy"></div><figcaption><b>Gradino di 0,5 rad, solo saturazione:</b> sovraelongazione dovuta al wind-up dell'integratore.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/step-antiwindup.png" alt="Step response with anti-windup" loading="lazy"></div><figcaption><b>Stesso gradino con anti-windup:</b> sovraelongazione eliminata.</figcaption></figure>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="text">
+          <div class="eyebrow">Controllo d'assetto di un lanciatore</div>
+          <h3 style="margin-top:8px;">LQR con azione integrale, tarato con Particle Swarm Optimization</h3>
+          <div class="meta">T4i Engineering · tirocinio R&amp;D e tesi magistrale · 2023</div>
+          <p>Controllo d'assetto di un lanciatore a spinta vettoriale, dal modello non lineare alla valutazione statistica della robustezza.</p>
+          <div class="kpis">
+            <div class="kpi"><b>500</b><span>simulazioni Monte Carlo sul modello non lineare</span></div>
+            <div class="kpi"><b>99,6%</b><span>entro 1° in beccheggio e rollio dopo 20 s</span></div>
+            <div class="kpi"><b>98,2%</b><span>entro 3° in imbardata dopo 20 s</span></div>
+          </div>
+          <p class="privacy">Figure non mostrate: il lavoro è stato svolto durante un tirocinio in azienda.</p>
+          <div class="tags"><span class="tag">6-DOF</span><span class="tag">LQR</span><span class="tag">PSO</span><span class="tag">Monte Carlo</span><span class="tag">Simulink</span></div>
+        </div>
+        <div class="flow">
+          <div><b>Modello non lineare</b>Massa e inerzia variabili, tabelle aerodinamiche, dinamica e saturazione degli attuatori dei jet vane, vento.</div>
+          <div><b>Modelli lineari</b>Modelli in spazio di stato longitudinale e laterale ricavati dal modello non lineare.</div>
+          <div><b>Legge di controllo</b>LQR con azione integrale per l'inseguimento in beccheggio, rollio e imbardata.</div>
+          <div><b>Taratura automatica</b>Matrici di peso tarate con PSO su tempo di salita e di assestamento.</div>
+          <div><b>Robustezza</b>Dispersioni su vento, massa, inerzia, spinta e coefficienti aerodinamici.</div>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="text">
+          <div class="eyebrow">Controllo ottimo</div>
+          <h3 style="margin-top:8px;">Ottimizzazione della traiettoria di rientro dello Space Shuttle</h3>
+          <div class="meta">Università di Bologna · 2021–2022 · individuale</div>
+          <p>Durante il rientro non propulso gli unici comandi sono i profili di angolo d'attacco e di angolo di bank. Li ho parametrizzati con 15 variabili di progetto e ottimizzati con il Sine-Cosine Algorithm su un modello a 6 stati con Terra rotante.</p>
+          <ul>
+            <li>Due obiettivi: massimizzare il cross-range e minimizzare il picco di flusso termico.</li>
+            <li>Vincoli terminali su quota, velocità e angolo di rampa; limiti sulle derivate per escludere oscillazioni non volabili.</li>
+          </ul>
+          <div class="kpis">
+            <div class="kpi"><b>−32%</b><span>picco di flusso termico, soluzione ottima per il calore vs per il cross-range</span></div>
+            <div class="kpi"><b>15</b><span>variabili di progetto</span></div>
+          </div>
+          <div class="tags"><span class="tag">Controllo ottimo</span><span class="tag">Vincoli</span><span class="tag">Metaeuristiche</span><span class="tag">MATLAB</span></div>
+        </div>
+        <div class="figs">
+          <figure><div class="im"><img src="../../engineering/img/reentry-latitude.png" alt="Latitude versus time, cross-range maximisation" loading="lazy"></div><figcaption><b>Caso cross-range:</b> latitudine raggiunta alla condizione terminale.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/reentry-alpha.png" alt="Optimised angle of attack profile" loading="lazy"></div><figcaption><b>Profilo di α ottimizzato</b>, caso cross-range.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/reentry-heat-max.png" alt="Heat rate for the cross-range solution" loading="lazy"></div><figcaption><b>Flusso termico, caso cross-range:</b> picco ≈ 2,2·10⁶ J/m²/s.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/reentry-heat-min.png" alt="Heat rate for the heat-minimisation solution" loading="lazy"></div><figcaption><b>Flusso termico, caso ottimo per il calore:</b> picco ≈ 1,5·10⁶ J/m²/s.</figcaption></figure>
+        </div>
+      </article>
+
+      <div class="minis">
+        <div class="mini">
+          <div class="eyebrow">Tesi triennale · Padova · 2020</div>
+          <h3>Controllo a spinta vettoriale di un lanciatore</h3>
+          <p>Dinamica di beccheggio di un lanciatore instabile in Simulink; legge di controllo PID progettata con il luogo delle radici, con saturazione dell'attuatore e anti-windup, e modello completo dell'attuatore elettromeccanico BLDC nell'anello.</p>
+          <div class="tags"><span class="tag">Sistema instabile</span><span class="tag">PID</span><span class="tag">Modello di attuatore</span></div>
+        </div>
+        <div class="mini">
+          <div class="eyebrow">Progetto personale · Python · 2026</div>
+          <h3>Determinazione orbitale da sole misure angolari</h3>
+          <p>Stato eliocentrico dell'asteroide (800) Kressmannia da astrometria: IOD di Gauss, Herrick-Gibbs, minimi quadrati batch, RK45, SPICE. Un arco di 2 giorni non era osservabile; unire i dati di tre osservatori in due mesi, uno dei quali gestito da me, ha risolto il problema. Posizione entro lo 0,1% rispetto a JPL Horizons.</p>
+          <p class="mono" style="font-size:.8rem;"><a href="https://github.com/andreacescato" target="_blank" rel="noopener">github.com/andreacescato</a></p>
+          <div class="tags"><span class="tag">Stima</span><span class="tag">Osservabilità</span><span class="tag">Python</span></div>
+        </div>
+        <div class="mini">
+          <div class="eyebrow">Progetto personale · 2021</div>
+          <h3>Registratore di dati di volo per razzo modello</h3>
+          <p>PCB su misura con Arduino Nano, IMU e data logger in un'ogiva stampata in 3D progettata da me; dati di volo usati per ricostruire assetto e accelerazioni.</p>
+          <div class="photos"><img src="../../engineering/img/fdr-pcb.jpg" alt="Flight recorder PCB next to the nose cone" loading="lazy"><img src="../../engineering/img/fdr-nosecone.jpg" alt="3D-printed nose cone" loading="lazy"></div>
+          <div class="tags"><span class="tag">Embedded</span><span class="tag">IMU</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="experience" aria-labelledby="exp-h">
+      <div class="sechead"><h2 id="exp-h">Esperienza</h2></div>
+      <div class="timeline">
+        <div class="job">
+          <div class="when">dic 2025 – oggi</div>
+          <div><h3>Ingegnere dei sistemi di controllo</h3><div class="org">Leonardo, Divisione Elettronica · tramite ALTEN Italia</div>
+          <p class="d">Modelli di sensori in Simulink e C/C++ integrati nella catena di controllo di un sistema di puntamento per la simulazione in anello chiuso; campagne di test in simulazione con esecuzione automatizzata (tempo di test ridotto del 50%); requisiti in IBM DOORS e architettura in SysML con Cameo.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">nov 2023 – dic 2025</div>
+          <div><h3>Ingegnere software avionico</h3><div class="org">Leonardo, Divisione Elicotteri · tramite TXT e-Tech</div>
+          <p class="d">Componenti model-based in MATLAB/Simulink per l'AW249 con codice autogenerato e comunicazione AFDX, in un ciclo di vita DO-178C completo; debug in integrazione di codice ADA e C generato.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">feb – mag 2023</div>
+          <div><h3>Ingegnere sistemi di controllo del volo, tirocinio R&amp;D</h3><div class="org">T4i – Technology for Propulsion and Innovation</div>
+          <p class="d">Legge di controllo d'assetto di un razzo ibrido a spinta vettoriale e relativa campagna di robustezza Monte Carlo.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">ott – dic 2022</div>
+          <div><h3>Ingegnere di progettazione aerospaziale, tirocinio Erasmus+</h3><div class="org">AIE Engineering, Dublino</div>
+          <p class="d">Progetto preliminare di un drone agricolo: requisiti, scelta di propulsione, batteria e sensori, stima dell'autonomia.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">2020 – 2023</div>
+          <div><h3>Laurea magistrale in Ingegneria Aerospaziale</h3><div class="org">Università di Bologna · in lingua inglese · Pegasus Certificate</div></div>
+        </div>
+        <div class="job">
+          <div class="when">2017 – 2020</div>
+          <div><h3>Laurea triennale in Ingegneria Meccatronica</h3><div class="org">Università di Padova</div></div>
+        </div>
+      </div>
+
+      <div class="skills" style="margin-top:40px;">
+        <div><h3>Controllo e dinamica del volo</h3><p>Progetto di leggi di controllo (PID, LQR, classico), aumento di stabilità e autopiloti, qualità di volo, trim e linearizzazione, analisi modale, saturazione e anti-windup, robustezza Monte Carlo.</p></div>
+        <div><h3>Strumenti</h3><p>MATLAB, Simulink, Stateflow, auto-generated code, Python, C, C++, ADA, FlightGear, Git, Linux.</p></div>
+        <div><h3>Processo</h3><p>Requisiti e tracciabilità (IBM DOORS), MBSE con SysML (Cameo), DO-178C, definizione e valutazione di test in simulazione.</p></div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-h">
+      <div>
+        <h2 id="contact-h">Contatti</h2>
+        <p>Cerco ruoli in leggi di controllo del volo, GNC e simulazione di volo, e sono disponibile a trasferirmi.</p>
+      </div>
+      <dl>
+        <dt>Email</dt><dd><span id="mail">andrea@cescato.it</span><button class="copy" id="copy" type="button">Copia</button></dd>
+        <dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/andreacescato" target="_blank" rel="noopener">linkedin.com/in/andreacescato</a></dd>
+        <dt>GitHub</dt><dd><a href="https://github.com/andreacescato" target="_blank" rel="noopener">github.com/andreacescato</a></dd>
+        <dt>Sede</dt><dd>Area di Milano</dd>
+      </dl>
+    </section>
+  </main>
+
+  <footer><span>© 2026 Andrea Cescato</span><a href="../index.html" style="color:inherit;">andrea.cescato.it</a></footer>
+</div>
+
+<script>
+(() => {
+  const cv = document.getElementById('adi');
+  const ctx = cv.getContext('2d');
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rc = document.getElementById('rc'), rt = document.getElementById('rt'), rq = document.getElementById('rq');
+  const wn = 1.6, z = 0.7, LIM = 25;
+  let th = 0, q = 0, cmd = 0, t0 = performance.now(), last = t0, idleSince = t0, dragging = false;
+  const fmt = (v, u) => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + u;
+
+  function demoCmd(t) { // replay: -15 deg at 5 s, +15 deg at 40 s, loop at 70 s
+    const s = (t / 1000) % 70;
+    return s < 5 ? 0 : s < 40 ? -15 : 15;
+  }
+  function setFromY(y) {
+    const r = cv.getBoundingClientRect();
+    const f = (y - r.top) / r.height; // 0 top .. 1 bottom
+    cmd = Math.max(-LIM, Math.min(LIM, (0.5 - f) * 2 * LIM));
+    idleSince = performance.now();
+  }
+  cv.addEventListener('pointerdown', e => { dragging = true; cv.setPointerCapture(e.pointerId); setFromY(e.clientY); });
+  cv.addEventListener('pointermove', e => { if (dragging) setFromY(e.clientY); });
+  cv.addEventListener('pointerup', () => { dragging = false; idleSince = performance.now(); });
+  cv.addEventListener('pointercancel', () => { dragging = false; });
+
+  function draw() {
+    const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, R = W / 2;
+    const ppd = H / 70; // pixels per degree of pitch
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.clip();
+    const off = th * ppd;
+    ctx.fillStyle = css('--sky'); ctx.fillRect(0, 0, W, cy + off);
+    ctx.fillStyle = css('--ground'); ctx.fillRect(0, cy + off, W, H);
+    ctx.strokeStyle = '#ffffff'; ctx.fillStyle = '#ffffff'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(0, cy + off); ctx.lineTo(W, cy + off); ctx.stroke();
+    ctx.font = '500 20px "IBM Plex Mono", monospace'; ctx.textBaseline = 'middle';
+    for (let d = -30; d <= 30; d += 5) {
+      if (d === 0) continue;
+      const y = cy + off - d * ppd, w = d % 10 === 0 ? 90 : 45;
+      ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx - w / 2, y); ctx.lineTo(cx + w / 2, y); ctx.stroke();
+      if (d % 10 === 0) { ctx.textAlign = 'left'; ctx.fillText(Math.abs(d), cx + w / 2 + 10, y); ctx.textAlign = 'right'; ctx.fillText(Math.abs(d), cx - w / 2 - 10, y); }
+    }
+    // command bug
+    const yc = cy + (th - cmd) * ppd;
+    ctx.fillStyle = css('--signal');
+    ctx.beginPath(); ctx.moveTo(W - 18, yc); ctx.lineTo(W - 46, yc - 13); ctx.lineTo(W - 46, yc + 13); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(18, yc); ctx.lineTo(46, yc - 13); ctx.lineTo(46, yc + 13); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    // fixed aircraft symbol
+    ctx.strokeStyle = css('--signal'); ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(cx - 150, cy); ctx.lineTo(cx - 60, cy); ctx.lineTo(cx - 30, cy + 26); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 150, cy); ctx.lineTo(cx + 60, cy); ctx.lineTo(cx + 30, cy + 26); ctx.stroke();
+    ctx.fillStyle = css('--signal'); ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = css('--line'); ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(cx, cy, R - 3, 0, Math.PI * 2); ctx.stroke();
+    rc.textContent = fmt(cmd, '°'); rt.textContent = fmt(th, '°'); rq.textContent = fmt(q, '°/s');
+  }
+  function step(now) {
+    let dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (!dragging && now - idleSince > 4000) cmd = demoCmd(now - t0);
+    const n = 4; dt /= n;
+    for (let i = 0; i < n; i++) { const a = wn * wn * (cmd - th) - 2 * z * wn * q; q += a * dt; th += q * dt; }
+    draw();
+    requestAnimationFrame(step);
+  }
+  if (reduce) {
+    draw();
+    const settle = () => { th = cmd; q = 0; draw(); };
+    cv.addEventListener('pointermove', () => { if (dragging) settle(); });
+    cv.addEventListener('pointerdown', settle);
+  } else {
+    requestAnimationFrame(step);
+  }
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  if (document.fonts) document.fonts.ready.then(draw);
+
+  const btn = document.getElementById('copy'), mail = document.getElementById('mail');
+  btn.addEventListener('click', () => {
+    const done = () => { btn.textContent = 'Copiato'; setTimeout(() => btn.textContent = 'Copia', 1600); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(mail); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selezionato'; setTimeout(() => btn.textContent = 'Copia', 1600); };
+    try { navigator.clipboard.writeText(mail.textContent).then(done, fallback); } catch (e) { fallback(); }
+  });
+})();
+</script>
+</body>
+</html>

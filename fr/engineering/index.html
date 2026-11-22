@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Andrea Cescato · Ingénierie</title>
+<link rel="alternate" hreflang="en" href="https://andrea.cescato.it/engineering/">
+<link rel="alternate" hreflang="fr" href="https://andrea.cescato.it/fr/engineering/">
+<link rel="alternate" hreflang="it" href="https://andrea.cescato.it/it/engineering/">
+<link rel="alternate" hreflang="x-default" href="https://andrea.cescato.it/engineering/">
+<meta name="description" content="Andrea Cescato, ingénieur aérospatial : lois de commande de vol, dynamique du vol et simulation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,600;112,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single column engineering notebook; hero = live attitude indicator; projects as figure-led case studies */
+:root {
+  --bg: #f3f6f9;
+  --surface: #ffffff;
+  --ink: #13233a;
+  --muted: #56677d;
+  --line: #d6dee8;
+  --accent: #1d4f99;
+  --signal: #d9821c;
+  --tint: #e7eef6;
+  --sky: #3f7fc4;
+  --ground: #8a5a33;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --maxw: 1080px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1420; --surface: #121d2c; --ink: #e5ecf4; --muted: #95a5ba; --line: #24344a;
+    --accent: #8db7ff; --signal: #f0a548; --tint: #172639; --sky: #2f6aa8; --ground: #6f4727;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1420; --surface: #121d2c; --ink: #e5ecf4; --muted: #95a5ba; --line: #24344a;
+  --accent: #8db7ff; --signal: #f0a548; --tint: #172639; --sky: #2f6aa8; --ground: #6f4727;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 1rem/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: var(--maxw); margin: 0 auto; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 3px; }
+h1, h2, h3 { font-family: var(--display); font-stretch: 112%; text-wrap: balance; margin: 0; line-height: 1.1; }
+h2 { font-size: clamp(1.6rem, 3.2vw, 2.2rem); }
+h3 { font-size: 1.25rem; }
+p { margin: 0; }
+.eyebrow { font: 500 .75rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--mono); }
+
+/* top bar */
+.top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 22px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.brand { font: 700 1rem/1 var(--display); font-stretch: 112%; color: var(--ink); text-decoration: none; letter-spacing: .02em; }
+.top nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.top nav a { color: var(--muted); text-decoration: none; font-size: .92rem; }
+.top nav a:hover { color: var(--ink); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; padding-block: 56px 48px; }
+.hero > * { min-width: 0; }
+.hero h1 { font-size: clamp(2.6rem, 6.4vw, 4.4rem); letter-spacing: -.01em; }
+.hero .role { font: 500 clamp(1.05rem, 2vw, 1.3rem)/1.35 var(--body); color: var(--accent); margin-top: 14px; }
+.hero .lede { color: var(--muted); max-width: 58ch; margin-top: 18px; font-size: 1.05rem; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 6px; font: 500 .95rem/1 var(--body); text-decoration: none; border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn:hover { border-color: var(--accent); }
+.facts { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 30px; font: .85rem/1.4 var(--mono); color: var(--muted); }
+.facts b { color: var(--ink); font-weight: 500; }
+
+/* attitude indicator */
+.adi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+.adi canvas { display: block; width: 100%; max-width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; cursor: ns-resize; touch-action: none; }
+.adi .readout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.adi .readout div { background: var(--tint); border-radius: 5px; padding: 8px 10px; }
+.adi .readout span { display: block; font-size: .7rem; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.adi .readout b { font-size: 1.05rem; font-weight: 500; }
+.adi .readout .cmd b { color: var(--signal); }
+.adi .note { font-size: .78rem; color: var(--muted); margin-top: 10px; line-height: 1.45; }
+
+/* design cycle */
+.cycle { border-block: 1px solid var(--line); padding-block: 26px; }
+.cycle ol { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; counter-reset: s; }
+.cycle li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 12px 14px; font-size: .9rem; line-height: 1.35; }
+.cycle li::before { content: counter(s); display: block; font: 500 .72rem/1 var(--mono); color: var(--signal); margin-bottom: 8px; }
+.cycle li b { display: block; font-family: var(--display); font-stretch: 112%; font-size: 1rem; margin-bottom: 4px; }
+.cycle li span { color: var(--muted); }
+
+/* sections */
+section.block { padding-block: 64px 8px; }
+.sechead { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+.sechead p { color: var(--muted); max-width: 52ch; }
+
+/* case study */
+.case { display: grid; grid-template-columns: 360px 1fr; gap: 36px; padding-block: 34px; border-top: 1px solid var(--line); }
+.case > * { min-width: 0; }
+.case .meta { font: .8rem/1.5 var(--mono); color: var(--muted); margin: 8px 0 14px; }
+.case .text p + p, .case .text ul { margin-top: 12px; }
+.case ul { padding-left: 18px; margin: 0; }
+.case li { margin-bottom: 6px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.tag { font: 500 .72rem/1 var(--mono); padding: 6px 8px; border-radius: 4px; background: var(--tint); color: var(--accent); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 18px; }
+.kpi { border-left: 3px solid var(--signal); padding: 4px 0 4px 12px; }
+.kpi b { display: block; font: 700 1.6rem/1.1 var(--display); font-stretch: 112%; font-variant-numeric: tabular-nums; }
+.kpi span { font-size: .8rem; color: var(--muted); line-height: 1.35; display: block; margin-top: 4px; }
+.figs { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); align-content: start; }
+.figs.three { grid-template-columns: repeat(3, 1fr); }
+figure { margin: 0; display: flex; flex-direction: column; min-width: 0; }
+figure .im { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 6px; display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3; overflow: hidden; }
+figure .im.photo { padding: 0; }
+figure img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+figure .im.photo img { width: 100%; height: 100%; object-fit: cover; }
+figcaption { font-size: .8rem; color: var(--muted); margin-top: 7px; line-height: 1.4; }
+figcaption b { color: var(--ink); font-weight: 600; }
+.wide { grid-column: 1 / -1; }
+.wide .im { aspect-ratio: 16 / 7; }
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-content: start; }
+.flow div { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 6px; padding: 12px; font-size: .86rem; line-height: 1.4; color: var(--muted); }
+.flow div b { display: block; color: var(--ink); font-family: var(--display); font-stretch: 112%; font-size: .95rem; margin-bottom: 4px; }
+.privacy { font-size: .8rem; color: var(--muted); margin-top: 14px; font-style: italic; }
+
+/* small projects */
+.minis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; border-top: 1px solid var(--line); padding-top: 34px; margin-top: 8px; }
+.mini { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.mini .meta { font: .78rem/1.4 var(--mono); color: var(--muted); }
+.mini p { font-size: .93rem; }
+.mini .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mini .photos img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 5px; display: block; }
+.mini .tags { margin-top: auto; padding-top: 6px; }
+
+/* experience */
+.timeline { display: grid; gap: 0; }
+.job { display: grid; grid-template-columns: 200px 1fr; gap: 28px; padding-block: 20px; border-top: 1px solid var(--line); }
+.job > * { min-width: 0; }
+.job .when { font: .82rem/1.5 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.job h3 { font-size: 1.1rem; }
+.job .org { color: var(--accent); font-size: .92rem; margin-top: 3px; }
+.job p.d { color: var(--muted); margin-top: 8px; max-width: 70ch; font-size: .95rem; }
+
+.skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 8px; }
+.skills div { min-width: 0; }
+.skills h3 { font-size: 1rem; margin-bottom: 8px; }
+.skills p { color: var(--muted); font-size: .93rem; }
+
+/* contact */
+.contact { margin-top: 72px; background: var(--ink); color: var(--bg); border-radius: 12px; padding: 40px clamp(20px, 4vw, 48px); display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; }
+.contact > * { min-width: 0; }
+.contact h2 { color: var(--bg); }
+.contact p { opacity: .8; margin-top: 12px; max-width: 46ch; }
+.contact dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; align-content: center; font-size: .95rem; }
+.contact dt { font: .75rem/1.9 var(--mono); text-transform: uppercase; letter-spacing: .1em; opacity: .65; }
+.contact dd { margin: 0; overflow-wrap: anywhere; }
+.contact a { color: var(--bg); }
+.copy { margin-left: 8px; font: 500 .72rem/1 var(--mono); padding: 5px 8px; border-radius: 4px; border: 1px solid currentColor; background: transparent; color: var(--bg); cursor: pointer; opacity: .8; }
+.copy:hover { opacity: 1; }
+footer { padding-block: 28px 40px; font: .78rem/1.5 var(--mono); color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; gap: 32px; padding-block: 40px 36px; }
+  .adi { max-width: 420px; }
+  .cycle ol { grid-template-columns: repeat(3, 1fr); }
+  .case { grid-template-columns: 1fr; gap: 22px; }
+  .flow { grid-template-columns: 1fr 1fr; }
+  .minis, .skills { grid-template-columns: 1fr; }
+  .job { grid-template-columns: 1fr; gap: 6px; }
+  .contact { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .cycle ol { grid-template-columns: 1fr 1fr; }
+  .figs, .figs.three { grid-template-columns: 1fr; }
+  .flow { grid-template-columns: 1fr; }
+  .top nav { gap: 14px; }
+}
+
+.langs { display: flex; gap: 10px; align-items: center; font: 500 .78rem/1 var(--mono); letter-spacing: .06em; }
+.langs a { color: var(--muted); text-decoration: none; padding: 4px 2px; }
+.langs a:hover { color: var(--ink); }
+.langs a[aria-current="page"] { color: var(--ink); border-bottom: 2px solid var(--signal); }
+.top .langs { padding-left: 16px; border-left: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="../index.html" title="andrea.cescato.it">ANDREA CESCATO</a>
+    <nav aria-label="Sections">
+      <a href="#projects">Projets</a>
+      <a href="#experience">Expérience</a>
+      <a href="#contact">Contact</a>
+      <span class="langs" aria-label="Language"><a href="../../engineering/index.html" hreflang="en" lang="en">EN</a><a href="index.html" hreflang="fr" lang="fr" aria-current="page">FR</a><a href="../../it/engineering/index.html" hreflang="it" lang="it">IT</a></span>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Ingénieur aérospatial · Région de Milan, Italie</div>
+        <h1 style="margin-top:14px;">Andrea Cescato</h1>
+        <p class="role">Lois de commande de vol, dynamique du vol et simulation</p>
+        <p class="lede">Je conçois et valide des lois de commande sur des modèles de vol non linéaires sous MATLAB/Simulink, de l'équilibrage et la linéarisation jusqu'à la simulation en boucle fermée. En industrie, je travaille sur des systèmes aéronautiques critiques pour des programmes Leonardo : aujourd'hui des modèles de simulation en boucle fermée, auparavant de l'avionique développée par modèles selon la DO-178C sur l'hélicoptère AW249.</p>
+        <div class="actions">
+          <a class="btn primary" href="#projects">Voir les projets</a>
+          <a class="btn" href="../../engineering/cv/Andrea_Cescato_CV.pdf" target="_blank" rel="noopener">CV (PDF, en anglais)</a>
+          <a class="btn" href="https://www.linkedin.com/in/andreacescato" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+        <div class="facts">
+          <span><b>Master</b> ingénierie aérospatiale, Bologne</span>
+          <span><b>~3 ans</b> dans l'industrie aérospatiale</span>
+          <span><b>EN</b> C1 · <b>FR</b> B1 · <b>IT</b> langue maternelle</span>
+        </div>
+      </div>
+
+      <div class="adi" aria-label="Horizon artificiel interactif">
+        <canvas id="adi" width="600" height="600" role="img" aria-label="Horizon artificiel : l'horizon suit l'assiette commandée"></canvas>
+        <div class="readout">
+          <div class="cmd"><span>θ cmd</span><b id="rc">+0.0°</b></div>
+          <div><span>θ</span><b id="rt">+0.0°</b></div>
+          <div><span>q</span><b id="rq">+0.0°/s</b></div>
+        </div>
+        <p class="note">Faites glisser l'instrument vers le haut ou vers le bas pour commander l'assiette. Au repos, il rejoue la séquence d'échelons de ±15° du test de mon pilote automatique de Cessna 172. La réponse affichée est un modèle illustratif du second ordre (ω<sub>n</sub> = 1,6 rad/s, ζ = 0,7), pas les données du projet.</p>
+      </div>
+    </section>
+
+    <section class="cycle" aria-labelledby="cycle-h">
+      <div class="eyebrow" id="cycle-h">Ma démarche pour une loi de commande</div>
+      <ol>
+        <li><b>Équilibrage</b><span>vol stabilisé sur le modèle non linéaire à 6 DDL</span></li>
+        <li><b>Linéarisation</b><span>matrices A/B par petites perturbations</span></li>
+        <li><b>Analyse</b><span>modes propres, exigences de qualités de vol</span></li>
+        <li><b>Conception</b><span>lieu des racines, PID, LQR, réglage</span></li>
+        <li><b>Implémentation</b><span>Simulink, saturations et anti-windup</span></li>
+        <li><b>Validation</b><span>simulation en boucle fermée, Monte-Carlo</span></li>
+      </ol>
+    </section>
+
+    <section class="block" id="projects" aria-labelledby="proj-h">
+      <div class="sechead">
+        <h2 id="proj-h">Projets</h2>
+        <p>Les figures proviennent de mes propres rapports de projet. Les travaux industriels sont confidentiels et ne sont décrits que par le texte.</p>
+      </div>
+
+      <article class="case">
+        <div class="text">
+          <div class="eyebrow">Commandes de vol d'avion</div>
+          <h3 style="margin-top:8px;">Cessna 172 : amortisseur de tangage et pilote automatique d'assiette</h3>
+          <div class="meta">Université de Bologne · 2021 · équipe de 2</div>
+          <p>Un cycle de conception complet sur un modèle non linéaire à 6 DDL du Cessna 172, équilibré en montée stabilisée à 5000 m.</p>
+          <ul>
+            <li>Modèles longitudinal et latéral-directionnel linéarisés numériquement et vérifiés par rapport aux dérivées de stabilité analytiques ; modes comparés à leurs approximations littérales.</li>
+            <li>Amortisseur de tangage dimensionné selon les critères de qualités de vol de niveau 1 : amortissement de l'oscillation d'incidence porté de 0,217 à 0,3.</li>
+            <li>Pilote automatique d'assiette par compensation au lieu des racines, implémenté sous forme de PID avec saturation de la gouverne de profondeur à ±25° et anti-windup par back-calculation.</li>
+            <li>Boucle fermée exécutée en temps réel, le modèle Simulink alimentant FlightGear.</li>
+          </ul>
+          <div class="kpis">
+            <div class="kpi"><b>0,217 → 0,3</b><span>amortissement de l'oscillation d'incidence avec K<sub>q</sub> = −0,04</span></div>
+            <div class="kpi"><b>±15°</b><span>consignes d'assiette suivies dans FlightGear</span></div>
+          </div>
+          <div class="tags"><span class="tag">6 DDL</span><span class="tag">Linéarisation</span><span class="tag">Qualités de vol</span><span class="tag">PID</span><span class="tag">Anti-windup</span><span class="tag">FlightGear</span></div>
+        </div>
+        <div class="figs">
+          <figure><div class="im"><img src="../../engineering/img/pitch-damper-rlocus.png" alt="Root locus of the pitch-rate loop" loading="lazy"></div><figcaption><b>Amortisseur de tangage.</b> Lieu des racines de la boucle de retour en q.</figcaption></figure>
+          <figure><div class="im photo"><img src="../../engineering/img/flightgear.jpg" alt="Cessna 172 in FlightGear" loading="lazy"></div><figcaption><b>FlightGear</b> alimenté par la boucle fermée Simulink.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/step-saturation.png" alt="Step response with elevator saturation showing overshoot" loading="lazy"></div><figcaption><b>Échelon de 0,5 rad, saturation seule :</b> dépassement dû à l'emballement de l'intégrateur.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/step-antiwindup.png" alt="Step response with anti-windup" loading="lazy"></div><figcaption><b>Même échelon avec anti-windup :</b> dépassement supprimé.</figcaption></figure>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="text">
+          <div class="eyebrow">Contrôle d'attitude de lanceur</div>
+          <h3 style="margin-top:8px;">LQR avec action intégrale, réglé par optimisation par essaim particulaire</h3>
+          <div class="meta">T4i Engineering · stage R&amp;D et mémoire de master · 2023</div>
+          <p>Contrôle d'attitude d'un lanceur à poussée vectorielle, du modèle non linéaire à l'évaluation statistique de la robustesse.</p>
+          <div class="kpis">
+            <div class="kpi"><b>500</b><span>tirages Monte-Carlo sur le modèle non linéaire</span></div>
+            <div class="kpi"><b>99,6 %</b><span>à moins de 1° en tangage et en roulis après 20 s</span></div>
+            <div class="kpi"><b>98,2 %</b><span>à moins de 3° en lacet après 20 s</span></div>
+          </div>
+          <p class="privacy">Figures non publiées : travail réalisé dans le cadre d'un stage en entreprise.</p>
+          <div class="tags"><span class="tag">6 DDL</span><span class="tag">LQR</span><span class="tag">PSO</span><span class="tag">Monte Carlo</span><span class="tag">Simulink</span></div>
+        </div>
+        <div class="flow">
+          <div><b>Modèle non linéaire</b>Masse et inertie variables, tables aérodynamiques, dynamique et saturation des actionneurs des volets de jet, vent.</div>
+          <div><b>Modèles linéaires</b>Modèles d'état longitudinal et latéral issus du modèle non linéaire.</div>
+          <div><b>Loi de commande</b>LQR avec action intégrale pour le suivi en tangage, roulis et lacet.</div>
+          <div><b>Réglage automatisé</b>Matrices de pondération réglées par PSO sur les temps de montée et d'établissement.</div>
+          <div><b>Robustesse</b>Dispersions sur le vent, la masse, l'inertie, la poussée et les coefficients aérodynamiques.</div>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="text">
+          <div class="eyebrow">Commande optimale</div>
+          <h3 style="margin-top:8px;">Optimisation de la trajectoire de rentrée de la navette spatiale</h3>
+          <div class="meta">Université de Bologne · 2021–2022 · projet individuel</div>
+          <p>Pendant la rentrée non propulsée, les seules commandes sont les profils d'incidence et d'angle de gîte. Je les ai paramétrés avec 15 variables de conception et optimisés par l'algorithme Sine-Cosine sur un modèle à 6 états au-dessus d'une Terre en rotation.</p>
+          <ul>
+            <li>Deux objectifs : maximiser la portée latérale et minimiser le pic de flux thermique.</li>
+            <li>Contraintes terminales sur l'altitude, la vitesse et la pente ; bornes sur les dérivées pour exclure les oscillations non pilotables.</li>
+          </ul>
+          <div class="kpis">
+            <div class="kpi"><b>−32 %</b><span>pic de flux thermique, solution optimale en chaleur vs en portée latérale</span></div>
+            <div class="kpi"><b>15</b><span>variables de conception</span></div>
+          </div>
+          <div class="tags"><span class="tag">Commande optimale</span><span class="tag">Contraintes</span><span class="tag">Métaheuristiques</span><span class="tag">MATLAB</span></div>
+        </div>
+        <div class="figs">
+          <figure><div class="im"><img src="../../engineering/img/reentry-latitude.png" alt="Latitude versus time, cross-range maximisation" loading="lazy"></div><figcaption><b>Cas portée latérale :</b> latitude atteinte à la condition terminale.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/reentry-alpha.png" alt="Optimised angle of attack profile" loading="lazy"></div><figcaption><b>Profil d'α optimisé</b>, cas portée latérale.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/reentry-heat-max.png" alt="Heat rate for the cross-range solution" loading="lazy"></div><figcaption><b>Flux thermique, cas portée latérale :</b> pic ≈ 2,2·10⁶ J/m²/s.</figcaption></figure>
+          <figure><div class="im"><img src="../../engineering/img/reentry-heat-min.png" alt="Heat rate for the heat-minimisation solution" loading="lazy"></div><figcaption><b>Flux thermique, cas optimal en chaleur :</b> pic ≈ 1,5·10⁶ J/m²/s.</figcaption></figure>
+        </div>
+      </article>
+
+      <div class="minis">
+        <div class="mini">
+          <div class="eyebrow">Mémoire de licence · Padoue · 2020</div>
+          <h3>Contrôle vectoriel de poussée d'un lanceur</h3>
+          <p>Dynamique de tangage d'un lanceur instable sous Simulink ; loi de commande PID conçue au lieu des racines, avec saturation de l'actionneur et anti-windup, et modèle complet d'actionneur électromécanique BLDC dans la boucle.</p>
+          <div class="tags"><span class="tag">Système instable</span><span class="tag">PID</span><span class="tag">Modèle d'actionneur</span></div>
+        </div>
+        <div class="mini">
+          <div class="eyebrow">Projet personnel · Python · 2026</div>
+          <h3>Détermination d'orbite par mesures angulaires</h3>
+          <p>État héliocentrique de l'astéroïde (800) Kressmannia à partir de l'astrométrie : IOD de Gauss, Herrick-Gibbs, moindres carrés par lots, RK45, SPICE. Un arc de 2 jours était inobservable ; la fusion des données de trois observatoires sur deux mois, dont un que j'exploite, a résolu le problème. Position à 0,1 % de JPL Horizons.</p>
+          <p class="mono" style="font-size:.8rem;"><a href="https://github.com/andreacescato" target="_blank" rel="noopener">github.com/andreacescato</a></p>
+          <div class="tags"><span class="tag">Estimation</span><span class="tag">Observabilité</span><span class="tag">Python</span></div>
+        </div>
+        <div class="mini">
+          <div class="eyebrow">Projet personnel · 2021</div>
+          <h3>Enregistreur de vol pour fusée modèle réduit</h3>
+          <p>Carte électronique sur mesure avec Arduino Nano, centrale inertielle et enregistreur, dans une coiffe imprimée en 3D que j'ai conçue ; données de vol utilisées pour reconstruire l'attitude et les accélérations.</p>
+          <div class="photos"><img src="../../engineering/img/fdr-pcb.jpg" alt="Flight recorder PCB next to the nose cone" loading="lazy"><img src="../../engineering/img/fdr-nosecone.jpg" alt="3D-printed nose cone" loading="lazy"></div>
+          <div class="tags"><span class="tag">Embarqué</span><span class="tag">IMU</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="experience" aria-labelledby="exp-h">
+      <div class="sechead"><h2 id="exp-h">Expérience</h2></div>
+      <div class="timeline">
+        <div class="job">
+          <div class="when">déc. 2025 – aujourd'hui</div>
+          <div><h3>Ingénieur systèmes de commande</h3><div class="org">Leonardo, division Électronique · via ALTEN Italia</div>
+          <p class="d">Modèles de capteurs Simulink et C/C++ intégrés dans la chaîne de commande d'un système de pointage pour la simulation en boucle fermée ; campagnes d'essais en simulation à exécution automatisée (durée des essais réduite de 50 %) ; exigences sous IBM DOORS et architecture en SysML avec Cameo.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">nov. 2023 – déc. 2025</div>
+          <div><h3>Ingénieur logiciel avionique</h3><div class="org">Leonardo, division Hélicoptères · via TXT e-Tech</div>
+          <p class="d">Composants développés par modèles sous MATLAB/Simulink pour l'AW249, avec code autogénéré et communication AFDX, dans un cycle de vie DO-178C complet ; débogage d'intégration du code ADA et du code C généré.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">févr. – mai 2023</div>
+          <div><h3>Ingénieur systèmes de commandes de vol, stage R&amp;D</h3><div class="org">T4i – Technology for Propulsion and Innovation</div>
+          <p class="d">Loi de contrôle d'attitude d'une fusée hybride à poussée vectorielle et sa campagne de robustesse Monte-Carlo.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">oct. – déc. 2022</div>
+          <div><h3>Ingénieur conception aérospatiale, stage Erasmus+</h3><div class="org">AIE Engineering, Dublin</div>
+          <p class="d">Conception préliminaire d'un drone agricole : exigences, choix de la propulsion, de la batterie et des capteurs, estimation de l'autonomie.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">2020 – 2023</div>
+          <div><h3>Master en ingénierie aérospatiale</h3><div class="org">Université de Bologne · enseigné en anglais · Pegasus Certificate</div></div>
+        </div>
+        <div class="job">
+          <div class="when">2017 – 2020</div>
+          <div><h3>Licence en ingénierie mécatronique</h3><div class="org">Université de Padoue</div></div>
+        </div>
+      </div>
+
+      <div class="skills" style="margin-top:40px;">
+        <div><h3>Commandes et dynamique du vol</h3><p>Conception de lois de commande (PID, LQR, classique), augmentation de stabilité et pilotes automatiques, qualités de vol, équilibrage et linéarisation, analyse modale, saturation et anti-windup, robustesse Monte-Carlo.</p></div>
+        <div><h3>Outils</h3><p>MATLAB, Simulink, Stateflow, auto-generated code, Python, C, C++, ADA, FlightGear, Git, Linux.</p></div>
+        <div><h3>Processus</h3><p>Exigences et traçabilité (IBM DOORS), MBSE avec SysML (Cameo), DO-178C, définition et évaluation d'essais en simulation.</p></div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-h">
+      <div>
+        <h2 id="contact-h">Me contacter</h2>
+        <p>Je recherche des postes en lois de commande de vol, GNC et simulation de vol, et je suis prêt à déménager.</p>
+      </div>
+      <dl>
+        <dt>E-mail</dt><dd><span id="mail">andrea@cescato.it</span><button class="copy" id="copy" type="button">Copier</button></dd>
+        <dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/andreacescato" target="_blank" rel="noopener">linkedin.com/in/andreacescato</a></dd>
+        <dt>GitHub</dt><dd><a href="https://github.com/andreacescato" target="_blank" rel="noopener">github.com/andreacescato</a></dd>
+        <dt>Basé à</dt><dd>Région de Milan, Italie</dd>
+      </dl>
+    </section>
+  </main>
+
+  <footer><span>© 2026 Andrea Cescato</span><a href="../index.html" style="color:inherit;">andrea.cescato.it</a></footer>
+</div>
+
+<script>
+(() => {
+  const cv = document.getElementById('adi');
+  const ctx = cv.getContext('2d');
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rc = document.getElementById('rc'), rt = document.getElementById('rt'), rq = document.getElementById('rq');
+  const wn = 1.6, z = 0.7, LIM = 25;
+  let th = 0, q = 0, cmd = 0, t0 = performance.now(), last = t0, idleSince = t0, dragging = false;
+  const fmt = (v, u) => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + u;
+
+  function demoCmd(t) { // replay: -15 deg at 5 s, +15 deg at 40 s, loop at 70 s
+    const s = (t / 1000) % 70;
+    return s < 5 ? 0 : s < 40 ? -15 : 15;
+  }
+  function setFromY(y) {
+    const r = cv.getBoundingClientRect();
+    const f = (y - r.top) / r.height; // 0 top .. 1 bottom
+    cmd = Math.max(-LIM, Math.min(LIM, (0.5 - f) * 2 * LIM));
+    idleSince = performance.now();
+  }
+  cv.addEventListener('pointerdown', e => { dragging = true; cv.setPointerCapture(e.pointerId); setFromY(e.clientY); });
+  cv.addEventListener('pointermove', e => { if (dragging) setFromY(e.clientY); });
+  cv.addEventListener('pointerup', () => { dragging = false; idleSince = performance.now(); });
+  cv.addEventListener('pointercancel', () => { dragging = false; });
+
+  function draw() {
+    const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, R = W / 2;
+    const ppd = H / 70; // pixels per degree of pitch
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.clip();
+    const off = th * ppd;
+    ctx.fillStyle = css('--sky'); ctx.fillRect(0, 0, W, cy + off);
+    ctx.fillStyle = css('--ground'); ctx.fillRect(0, cy + off, W, H);
+    ctx.strokeStyle = '#ffffff'; ctx.fillStyle = '#ffffff'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(0, cy + off); ctx.lineTo(W, cy + off); ctx.stroke();
+    ctx.font = '500 20px "IBM Plex Mono", monospace'; ctx.textBaseline = 'middle';
+    for (let d = -30; d <= 30; d += 5) {
+      if (d === 0) continue;
+      const y = cy + off - d * ppd, w = d % 10 === 0 ? 90 : 45;
+      ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx - w / 2, y); ctx.lineTo(cx + w / 2, y); ctx.stroke();
+      if (d % 10 === 0) { ctx.textAlign = 'left'; ctx.fillText(Math.abs(d), cx + w / 2 + 10, y); ctx.textAlign = 'right'; ctx.fillText(Math.abs(d), cx - w / 2 - 10, y); }
+    }
+    // command bug
+    const yc = cy + (th - cmd) * ppd;
+    ctx.fillStyle = css('--signal');
+    ctx.beginPath(); ctx.moveTo(W - 18, yc); ctx.lineTo(W - 46, yc - 13); ctx.lineTo(W - 46, yc + 13); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(18, yc); ctx.lineTo(46, yc - 13); ctx.lineTo(46, yc + 13); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    // fixed aircraft symbol
+    ctx.strokeStyle = css('--signal'); ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(cx - 150, cy); ctx.lineTo(cx - 60, cy); ctx.lineTo(cx - 30, cy + 26); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 150, cy); ctx.lineTo(cx + 60, cy); ctx.lineTo(cx + 30, cy + 26); ctx.stroke();
+    ctx.fillStyle = css('--signal'); ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = css('--line'); ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(cx, cy, R - 3, 0, Math.PI * 2); ctx.stroke();
+    rc.textContent = fmt(cmd, '°'); rt.textContent = fmt(th, '°'); rq.textContent = fmt(q, '°/s');
+  }
+  function step(now) {
+    let dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (!dragging && now - idleSince > 4000) cmd = demoCmd(now - t0);
+    const n = 4; dt /= n;
+    for (let i = 0; i < n; i++) { const a = wn * wn * (cmd - th) - 2 * z * wn * q; q += a * dt; th += q * dt; }
+    draw();
+    requestAnimationFrame(step);
+  }
+  if (reduce) {
+    draw();
+    const settle = () => { th = cmd; q = 0; draw(); };
+    cv.addEventListener('pointermove', () => { if (dragging) settle(); });
+    cv.addEventListener('pointerdown', settle);
+  } else {
+    requestAnimationFrame(step);
+  }
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  if (document.fonts) document.fonts.ready.then(draw);
+
+  const btn = document.getElementById('copy'), mail = document.getElementById('mail');
+  btn.addEventListener('click', () => {
+    const done = () => { btn.textContent = 'Copié'; setTimeout(() => btn.textContent = 'Copier', 1600); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(mail); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Sélectionné'; setTimeout(() => btn.textContent = 'Copier', 1600); };
+    try { navigator.clipboard.writeText(mail.textContent).then(done, fallback); } catch (e) { fallback(); }
+  });
+})();
+</script>
+</body>
+</html>

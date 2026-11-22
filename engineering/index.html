@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Andrea Cescato · Engineering</title>
+<link rel="alternate" hreflang="en" href="https://andrea.cescato.it/engineering/">
+<link rel="alternate" hreflang="fr" href="https://andrea.cescato.it/fr/engineering/">
+<link rel="alternate" hreflang="it" href="https://andrea.cescato.it/it/engineering/">
+<link rel="alternate" hreflang="x-default" href="https://andrea.cescato.it/engineering/">
 <meta name="description" content="Andrea Cescato, aerospace engineer: flight control laws, flight dynamics and simulation.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -181,6 +185,12 @@ footer { padding-block: 28px 40px; font: .78rem/1.5 var(--mono); color: var(--mu
   .flow { grid-template-columns: 1fr; }
   .top nav { gap: 14px; }
 }
+
+.langs { display: flex; gap: 10px; align-items: center; font: 500 .78rem/1 var(--mono); letter-spacing: .06em; }
+.langs a { color: var(--muted); text-decoration: none; padding: 4px 2px; }
+.langs a:hover { color: var(--ink); }
+.langs a[aria-current="page"] { color: var(--ink); border-bottom: 2px solid var(--signal); }
+.top .langs { padding-left: 16px; border-left: 1px solid var(--line); }
 </style>
 </head>
 <body>
@@ -191,6 +201,7 @@ footer { padding-block: 28px 40px; font: .78rem/1.5 var(--mono); color: var(--mu
       <a href="#projects">Projects</a>
       <a href="#experience">Experience</a>
       <a href="#contact">Contact</a>
+      <span class="langs" aria-label="Language"><a href="index.html" hreflang="en" lang="en" aria-current="page">EN</a><a href="../fr/engineering/index.html" hreflang="fr" lang="fr">FR</a><a href="../it/engineering/index.html" hreflang="it" lang="it">IT</a></span>
     </nav>
   </header>
 
