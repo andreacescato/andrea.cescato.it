@@ -85,6 +85,10 @@ a.row:hover .go { transform: translateX(4px); }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .tag { font: 500 .72rem/1 var(--mono); padding: 6px 8px; border-radius: 4px; background: var(--tint); color: var(--accent); }
 
+.ai { margin-top: 36px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.ai h3 { font: 600 1rem/1.3 var(--body); margin: 0 0 8px; }
+.ai p { color: var(--muted); font-size: .93rem; margin: 0; max-width: 62ch; }
+.ai p + p { margin-top: 10px; }
 footer { max-width: 1040px; margin: 0 auto; padding-block: 24px 36px; font: .78rem/1.5 var(--mono); color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); }
 
 @media (prefers-reduced-motion: reduce) { .row .go, a.row::before { transition: none; } }
@@ -149,6 +153,11 @@ footer { max-width: 1040px; margin: 0 auto; padding-block: 24px 36px; font: .78r
         <span class="go" aria-hidden="true">Instagram ↗</span>
       </a>
     </nav>
+    <aside class="ai" id="ai" aria-labelledby="ai-h">
+      <h3 id="ai-h">Comment j'utilise l'IA</h3>
+      <p>J'ai réalisé ce site entièrement avec Claude, l'assistant IA d'Anthropic : mise en page, code, traductions et une bonne partie de la rédaction. Les projets, les données et les figures sont les miens, et j'ai relu chaque page.</p>
+      <p>Pour mes projets, c'est différent : j'utilise Claude uniquement comme soutien pendant le développement, jamais pour obtenir un résultat tout fait. Je lui demande de m'expliquer ce que je ne connais pas encore et de me guider quand j'aborde un sujet nouveau. Les choix de conception et le code sont de moi : par exemple, j'ai écrit moi-même le code de détermination d'orbite, avec Claude comme mentor pendant que j'apprenais un domaine nouveau pour moi.</p>
+    </aside>
   </section>
 </main>
 <footer><span>© 2026 Andrea Cescato</span><span>andrea.cescato.it</span></footer>

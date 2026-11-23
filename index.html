@@ -85,6 +85,10 @@ a.row:hover .go { transform: translateX(4px); }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .tag { font: 500 .72rem/1 var(--mono); padding: 6px 8px; border-radius: 4px; background: var(--tint); color: var(--accent); }
 
+.ai { margin-top: 36px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.ai h3 { font: 600 1rem/1.3 var(--body); margin: 0 0 8px; }
+.ai p { color: var(--muted); font-size: .93rem; margin: 0; max-width: 62ch; }
+.ai p + p { margin-top: 10px; }
 footer { max-width: 1040px; margin: 0 auto; padding-block: 24px 36px; font: .78rem/1.5 var(--mono); color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); }
 
 @media (prefers-reduced-motion: reduce) { .row .go, a.row::before { transition: none; } }
@@ -149,6 +153,11 @@ footer { max-width: 1040px; margin: 0 auto; padding-block: 24px 36px; font: .78r
         <span class="go" aria-hidden="true">Instagram ↗</span>
       </a>
     </nav>
+    <aside class="ai" id="ai" aria-labelledby="ai-h">
+      <h3 id="ai-h">How I use AI</h3>
+      <p>I built this website entirely with Claude, Anthropic's AI assistant: layout, code, translations and much of the wording. The projects, data and figures are mine, and I reviewed every page.</p>
+      <p>My projects are a different matter. There I use Claude only as support during development, never to get a ready-made result: I ask it to explain what I don't know yet and to guide me when I approach a new subject. The design choices and the code are my own. For example, I wrote the orbit determination code myself, with Claude as a mentor while I learned a field that was new to me.</p>
+    </aside>
   </section>
 </main>
 <footer><span>© 2026 Andrea Cescato</span><span>andrea.cescato.it</span></footer>
