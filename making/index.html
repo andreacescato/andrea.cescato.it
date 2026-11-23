@@ -203,8 +203,20 @@ footer { padding-block: 28px 40px; font: .78rem/1.5 var(--mono); color: var(--mu
 .mini.span { grid-column: 1 / -1; }
 .mini.span .photos { max-width: 520px; }
 .mini a.more { font: 500 .8rem/1.4 var(--mono); }
+.case.making .wide { grid-column: 1 / -1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.figrow { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.figrow { align-items: start; }
+.figrow figure .im { background: var(--surface); aspect-ratio: auto; padding: 0; }
+.figrow figure img { width: 100%; height: auto; max-height: none; }
+.figrow figure a { display: block; }
+.note-sim { font-size: .85rem; color: var(--muted); }
+.spec.verify { margin-top: 0; }
+.spec.verify div { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.spec.verify .warn .v { color: var(--signal); }
+.verify-h { font: 500 .75rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.downloads { display: flex; gap: 10px; flex-wrap: wrap; }
 .thingi { margin-top: 28px; font: .85rem/1.5 var(--mono); color: var(--muted); }
-@media (max-width: 900px) { .case.making, .minis.four { grid-template-columns: 1fr; } .spec div { grid-template-columns: 1fr; gap: 2px; } }
+@media (max-width: 900px) { .case.making, .minis.four, .figrow { grid-template-columns: 1fr; } .spec div, .spec.verify div { grid-template-columns: 1fr; gap: 2px; } }
 
 .langs { display: flex; gap: 10px; align-items: center; font: 500 .78rem/1 var(--mono); letter-spacing: .06em; }
 .langs a { color: var(--muted); text-decoration: none; padding: 4px 2px; }
@@ -253,25 +265,53 @@ footer { padding-block: 28px 40px; font: .78rem/1.5 var(--mono); color: var(--mu
           <li><span>Set up the flow check as a CFD simulation in FreeCAD and OpenFOAM, to be confirmed with smoke tests.</span></li>
           <li><span>Designed 3D-printed fittings for a fully reversible installation, with the fan controlled from the observatory PC even without internet.</span></li>
         </ol>
+        <div class="wide">
+          <div class="figrow">
+            <figure><div class="im"><img src="img/cfd-umag.png" alt="CFD velocity magnitude inside the telescope tube" loading="lazy"></div><figcaption><b>Velocity magnitude</b> in a section of the tube (scale 0–0.3 m/s).</figcaption></figure>
+            <figure><div class="im"><img src="img/cfd-uz.png" alt="CFD vertical velocity inside the telescope tube" loading="lazy"></div><figcaption><b>Vertical velocity U<sub>z</sub></b> in the same section (scale ±0.1 m/s).</figcaption></figure>
+          </div>
+          <p class="note-sim">OpenFOAM simulations. They assume the air is pushed in through a small side hatch.</p>
+        </div>
       </article>
 
       <article class="case making">
         <div class="text">
           <div class="eyebrow">Dome · power electronics</div>
           <h3 style="margin-top:8px;">Motorised dome shutters</h3>
-          <p style="margin-top:12px;">Motors and the complete control system for the two shutters of an observatory dome, running on solar power.</p>
+          <p style="margin-top:12px;">Motors and the complete control system for the two shutters of the GAPC ODV observatory dome. It runs on solar power and opens by radio from the observatory PC.</p>
           <div class="kpis">
-            <div class="kpi"><b>24 V</b><span>DC motors, sized from measured currents</span></div>
-            <div class="kpi"><b>2-layer</b><span>PCB in KiCad, ready for production</span></div>
+            <div class="kpi"><b>24 V</b><span>wiper motors, sized from measured currents</span></div>
+            <div class="kpi"><b>2-layer</b><span>PCB, 125 × 104 mm, 2 oz copper, ready for production</span></div>
             <div class="kpi"><b>10 years</b><span>of hourly satellite weather data for the power budget</span></div>
           </div>
         </div>
         <ol class="steps">
           <li><span>Sized the 24 V motors from the running currents I measured, with estimated inrush currents.</span></li>
-          <li><span>Designed a radio-controlled relay board with direction reversal, safety limit switches and an energy reserve that keeps the control powered during motor inrush.</span></li>
+          <li><span>Built the radio chain: observatory PC, Wi-Fi to a 433 MHz bridge, and a receiver with reversible polarity. One radio code moves both shutters and each stops at its own limit switch.</span></li>
+          <li><span>Designed the relay board: four 16 A relays, diodes steering the open and close branches, normally closed safety limit switches, and a 2200 µF hold-up that keeps the control powered during motor inrush.</span></li>
           <li><span>Drew the schematic and a two-layer PCB in KiCad, with traces sized for the inrush currents.</span></li>
           <li><span>Sized the battery and solar panel with an hourly simulation over ten years of real satellite weather data.</span></li>
         </ol>
+        <div class="wide">
+          <div class="figrow">
+            <figure><div class="im"><img src="img/dome-pcb.jpg" alt="KiCad layout of the shutter relay board" loading="lazy"></div><figcaption><b>Relay board v1.1</b> in KiCad: wide power traces for the motor inrush.</figcaption></figure>
+            <figure><div class="im"><a href="files/schema-cupola-ante.pdf" target="_blank" rel="noopener"><img src="img/dome-schematic.png" alt="Schematic of the dome shutter system" loading="lazy"></a></div><figcaption><b>System schematic:</b> solar supply, radio control and the circuit of each shutter.</figcaption></figure>
+          </div>
+          <div class="verify-h">Checks before production · 20 A inrush per motor</div>
+          <div class="spec verify">
+            <div><span class="k">Design rules (KiCad)</span><span class="v">0 violations, 0 unrouted connections</span></div>
+            <div><span class="k">Board vs schematic</span><span class="v">25 nets, all matching</span></div>
+            <div><span class="k">Relay contacts at start-up</span><span class="v">17.5 A peak, against a 30 A making limit</span></div>
+            <div><span class="k">T6.3A fuses at inrush</span><span class="v">13–16% of the melting I²t</span></div>
+            <div><span class="k">Control supply during inrush</span><span class="v">Stays above 18 V while the 24 V rail sags to about 10 V</span></div>
+            <div><span class="k">Trace heating at inrush</span><span class="v">Below 5 K</span></div>
+            <div class="warn"><span class="k">Known limit</span><span class="v">Reversing without STOP reaches 32 A: press STOP and wait 1 s</span></div>
+          </div>
+          <div class="downloads">
+            <a class="btn" href="files/schema-cupola-ante.pdf" target="_blank" rel="noopener">Schematic (PDF, Italian)</a>
+            <a class="btn" href="files/guida-scheda-ante.pdf" target="_blank" rel="noopener">Build and test guide (PDF, Italian)</a>
+          </div>
+        </div>
       </article>
     </section>
 

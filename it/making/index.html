@@ -203,8 +203,20 @@ footer { padding-block: 28px 40px; font: .78rem/1.5 var(--mono); color: var(--mu
 .mini.span { grid-column: 1 / -1; }
 .mini.span .photos { max-width: 520px; }
 .mini a.more { font: 500 .8rem/1.4 var(--mono); }
+.case.making .wide { grid-column: 1 / -1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.figrow { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.figrow { align-items: start; }
+.figrow figure .im { background: var(--surface); aspect-ratio: auto; padding: 0; }
+.figrow figure img { width: 100%; height: auto; max-height: none; }
+.figrow figure a { display: block; }
+.note-sim { font-size: .85rem; color: var(--muted); }
+.spec.verify { margin-top: 0; }
+.spec.verify div { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.spec.verify .warn .v { color: var(--signal); }
+.verify-h { font: 500 .75rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.downloads { display: flex; gap: 10px; flex-wrap: wrap; }
 .thingi { margin-top: 28px; font: .85rem/1.5 var(--mono); color: var(--muted); }
-@media (max-width: 900px) { .case.making, .minis.four { grid-template-columns: 1fr; } .spec div { grid-template-columns: 1fr; gap: 2px; } }
+@media (max-width: 900px) { .case.making, .minis.four, .figrow { grid-template-columns: 1fr; } .spec div, .spec.verify div { grid-template-columns: 1fr; gap: 2px; } }
 
 .langs { display: flex; gap: 10px; align-items: center; font: 500 .78rem/1 var(--mono); letter-spacing: .06em; }
 .langs a { color: var(--muted); text-decoration: none; padding: 4px 2px; }
@@ -253,25 +265,53 @@ footer { padding-block: 28px 40px; font: .78rem/1.5 var(--mono); color: var(--mu
           <li><span>Ho impostato la verifica del flusso con una simulazione CFD in FreeCAD e OpenFOAM, da confermare con prove al fumo.</span></li>
           <li><span>Raccordi stampati in 3D per un'installazione reversibile; la ventola si comanda dal PC dell'osservatorio anche senza internet.</span></li>
         </ol>
+        <div class="wide">
+          <div class="figrow">
+            <figure><div class="im"><img src="../../making/img/cfd-umag.png" alt="CFD velocity magnitude inside the telescope tube" loading="lazy"></div><figcaption><b>Modulo della velocità</b> in una sezione del tubo (scala 0–0,3 m/s).</figcaption></figure>
+            <figure><div class="im"><img src="../../making/img/cfd-uz.png" alt="CFD vertical velocity inside the telescope tube" loading="lazy"></div><figcaption><b>Velocità verticale U<sub>z</sub></b> nella stessa sezione (scala ±0,1 m/s).</figcaption></figure>
+          </div>
+          <p class="note-sim">Simulazioni OpenFOAM. Assumono che l'aria venga spinta da uno sportellino laterale.</p>
+        </div>
       </article>
 
       <article class="case making">
         <div class="text">
           <div class="eyebrow">Cupola · elettronica di potenza</div>
           <h3 style="margin-top:8px;">Automazione delle ante della cupola</h3>
-          <p style="margin-top:12px;">Motori e impianto di comando completo per le due ante della cupola di un osservatorio, alimentato a energia solare.</p>
+          <p style="margin-top:12px;">Motori e impianto di comando completo per le due ante della cupola dell'osservatorio GAPC ODV. Funziona a energia solare e si apre via radio dal PC dell'osservatorio.</p>
           <div class="kpis">
-            <div class="kpi"><b>24 V</b><span>motori in corrente continua, dimensionati dalle correnti misurate</span></div>
-            <div class="kpi"><b>2 strati</b><span>circuito stampato in KiCad, pronto per la produzione</span></div>
+            <div class="kpi"><b>24 V</b><span>motori da tergicristallo, dimensionati dalle correnti misurate</span></div>
+            <div class="kpi"><b>2 strati</b><span>circuito stampato 125 × 104 mm, rame 2 oz, pronto per la produzione</span></div>
             <div class="kpi"><b>10 anni</b><span>di dati meteo orari da satellite per il bilancio energetico</span></div>
           </div>
         </div>
         <ol class="steps">
           <li><span>Ho dimensionato i motori a 24 V partendo dalle correnti misurate in marcia e stimando quelle di spunto.</span></li>
-          <li><span>Scheda relè comandata via radio, con inversione di marcia, finecorsa di sicurezza e una riserva di energia che tiene alimentato il comando durante lo spunto dei motori.</span></li>
+          <li><span>Catena radio: PC dell'osservatorio, Wi-Fi verso un ponte a 433 MHz e un ricevitore a polarità invertibile. Un solo codice radio muove le due ante e ognuna si ferma al proprio finecorsa.</span></li>
+          <li><span>Scheda relè: quattro relè da 16 A, diodi che separano i rami di apertura e chiusura, finecorsa di sicurezza normalmente chiusi e un tampone da 2200 µF che tiene alimentato il comando durante lo spunto dei motori.</span></li>
           <li><span>Schema elettrico e circuito stampato a due strati in KiCad, con piste dimensionate per le correnti di spunto.</span></li>
           <li><span>Dimensionamento di batteria e pannello solare con una simulazione oraria su dieci anni di dati meteo reali da satellite.</span></li>
         </ol>
+        <div class="wide">
+          <div class="figrow">
+            <figure><div class="im"><img src="../../making/img/dome-pcb.jpg" alt="KiCad layout of the shutter relay board" loading="lazy"></div><figcaption><b>Scheda relè v1.1</b> in KiCad: piste di potenza larghe per lo spunto dei motori.</figcaption></figure>
+            <figure><div class="im"><a href="../../making/files/schema-cupola-ante.pdf" target="_blank" rel="noopener"><img src="../../making/img/dome-schematic.png" alt="Schematic of the dome shutter system" loading="lazy"></a></div><figcaption><b>Schema dell'impianto:</b> alimentazione solare, comando radio e circuito di ciascuna anta.</figcaption></figure>
+          </div>
+          <div class="verify-h">Verifiche prima della produzione · spunto di 20 A per motore</div>
+          <div class="spec verify">
+            <div><span class="k">Regole di progetto (KiCad)</span><span class="v">0 violazioni, 0 collegamenti mancanti</span></div>
+            <div><span class="k">Scheda vs schema</span><span class="v">25 reti, tutte corrispondenti</span></div>
+            <div><span class="k">Contatti dei relè all'avvio</span><span class="v">Picco di 17,5 A, con limite di chiusura di 30 A</span></div>
+            <div><span class="k">Fusibili T6,3A allo spunto</span><span class="v">13–16% dell'I²t di fusione</span></div>
+            <div><span class="k">Alimentazione del comando allo spunto</span><span class="v">Resta sopra 18 V mentre il 24 V scende fino a circa 10 V</span></div>
+            <div><span class="k">Riscaldamento delle piste allo spunto</span><span class="v">Meno di 5 K</span></div>
+            <div class="warn"><span class="k">Limite noto</span><span class="v">Invertire senza passare da STOP porta a 32 A: premere STOP e attendere 1 s</span></div>
+          </div>
+          <div class="downloads">
+            <a class="btn" href="../../making/files/schema-cupola-ante.pdf" target="_blank" rel="noopener">Schema elettrico (PDF)</a>
+            <a class="btn" href="../../making/files/guida-scheda-ante.pdf" target="_blank" rel="noopener">Guida al montaggio e alla prova (PDF)</a>
+          </div>
+        </div>
       </article>
     </section>
 
